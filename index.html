@@ -1,6 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<div class="header-with-timer">
+  <div id="timer">60:00</div>
+</div>
+<style>
+  .header-with-timer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px; /* optional spacing */
+  }
+
+  #timer {
+    font-size: 24px;
+    font-weight: bold;
+  }
+</style>
+
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-title" content="MyAppName">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -190,6 +207,29 @@
 
       reader.readAsText(blob);
   });
+</script>
+<script>
+  let duration = 60 * 60; // 60 minutes
+
+  function startTimer(seconds) {
+    const display = document.getElementById('timer');
+
+    const countdown = setInterval(() => {
+      const minutes = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      display.textContent = `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+      
+      if (seconds <= 0) {
+        clearInterval(countdown);
+      } else {
+        seconds--;
+      }
+    }, 1000);
+  }
+
+  window.onload = () => {
+    startTimer(duration);
+  };
 </script>
 
 </body>
