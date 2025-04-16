@@ -1,87 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Workout Tracker</title>
-  <script src="https://unpkg.com/dropbox/dist/Dropbox-sdk.min.js"></script>
-  <style>
-    body { font-family: sans-serif; padding: 20px; }
-    table, th, td { border: 1px solid black; border-collapse: collapse; padding: 8px; }
-    table { margin-bottom: 20px; width: 100%; }
-    button { padding: 10px 20px; font-size: 16px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Tracker</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+        }
+        .container {
+            padding: 20px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        table {
+            width: 100%;
+            margin: 20px 0;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        input[type="text"], input[type="number"], input[type="date"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .save-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+        .save-btn:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-  <h1>Workout Tracker</h1>
-  <table id="workoutTable">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Exercise</th>
-        <th>Reps</th>
-        <th>Weight</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td><input type="date"></td>
-        <td><input type="text" placeholder="e.g. Bench Press"></td>
-        <td><input type="number" placeholder="e.g. 10"></td>
-        <td><input type="number" placeholder="e.g. 135"></td>
-      </tr>
-    </tbody>
-  </table>
-  <button onclick="addRow()">Add Row</button>
-  <button onclick="saveData()">Save to Dropbox</button>
 
-  <script>
-    const DROPBOX_ACCESS_TOKEN = "sl.u.AFp25etBoyAnpfLTgEpxxtSRl5zxCZrfDtrlkWUCXPvccgOy47zhiCoxI5IToYPj61qT-acju9_Z4UwLh-TRrf6H1Th4dmW9t9TA4eqCWYzic6pX0OSy1qmqTYF_gdGQVe8D5ckiyGEgGF66sTSUKrq9d9GvaZ8CV1wEJR1T2UaSHDIeTw6JvBczH0i3AEVIK_a445gu6NkEtjEN-_3445pQw84lkWmIC6sCfPbt9_1ZI1vMEo167TswPm-Zw9dgbQW2deVsPqwK9rO8Ppc5u4oKmjGnz5OFkpaSR6m3Y1pbs1ZJrZyJCyJIHa_YiDjGdk-Gdo5sRgNCQxzP8YzfIZ4N9YdqBR8nu9a7YRVlvOUXCJek7aXABDDzOShsb9uauZ54Y57W5paaPr78ytbySdX_qP_zxtGR1LZzLJI6WXaCIYGz4MaL8ZEI33UOi6W-i7WAMnkf93s8dilMp6eB8Il9Xj7-Gxkuu5BjKOGSkuKglaUxc0gfgzPQGAT1uiuaPjG74_f1tCSWozXq6qlRpcJWMXVUoX9xuwDp-v623mK0r_wKeFI_LId0nhijUaVXAt8uyZ8bByc4V2BsnIZ-JZc-QCnNCzW5WMbwdM7m03ZzA1gR4AnZoaKxguegIlB78-a5KeP89eHV5f1i8nl5Y0nfFzUApeKmMqPjXw8Cnx2imvR0hE86ntAAgVrvJNdKtYxCKrWoxD2OLGcedh0FT64bo1ZPmq9RUBmn05C3loyRACEAsi4rsRxrydTiz1ph0gaiwaFS3dam-LI-eifIct-0tQvfOgzMtlNuJA3w3EjmM1_kX_ixvXPrPIBblUQw4UAR5jm50LATFMXNi4CuBU2dlFKXiYWiYDRe0z9j4m2-2gK9KXVe5Ss_DsRfpHZh2KM5zRjgwTJRhQhiFi3rFCgdbO6mC5yAz1Lg4-cIAXaCUl-9KHvq5YEkR3W_eIDGVhlIXBr8tDmAzpHRbHDRQ7DcZ-3KBm4AlmVGdEB0x9Alh-06HMf18n-YCSdAd7O7xfLS1DgQcUdGXVlmAgSnFF496SOR4BcnrTM9qSXITgacxDV6etYXScpS2qMeB9XPn4YiufEb6wpmGdbZM40sOA_uPVCo4iYJle0okwvfmbalEObLg69LBkCcKlGRtdOCXsb5xA-r_1AIEf49-68nTyMZ9e751p_7UA_ukycP0gzUcFxP2yfIw-n0ssFpDTrzbAJ3Z7ITKgZymPxfFQfBRIWrfCEDQr4nDpMy3BrBLtCjRmzFsDpIVEtckjcTm8jMq953IPI7ipfQ4GidsbW2d7x0";
+<header>
+    <h1>Workout Tracker</h1>
+    <p>Track your workouts and save them to Dropbox</p>
+</header>
 
-    function addRow() {
-      const table = document.getElementById("workoutTable").getElementsByTagName('tbody')[0];
-      const row = table.insertRow();
-      for (let i = 0; i < 4; i++) {
-        const cell = row.insertCell();
-        const input = document.createElement("input");
-        input.type = (i === 0) ? "date" : (i > 1 ? "number" : "text");
-        input.placeholder = (i === 1) ? "e.g. Squats" : (i === 2 ? "e.g. 10" : (i === 3 ? "e.g. 135" : ""));
-        cell.appendChild(input);
-      }
+<div class="container">
+    <h2>Enter Workout Details</h2>
+
+    <!-- Form to input workout data -->
+    <input type="text" id="exercise" placeholder="Exercise (e.g., Squats)" required>
+    <input type="number" id="sets" placeholder="Sets" required>
+    <input type="number" id="reps" placeholder="Reps per Set" required>
+    <input type="number" id="weight" placeholder="Weight (kg)" required>
+    <input type="date" id="date" required>
+
+    <button id="addWorkout" class="save-btn">Add Workout</button>
+
+    <!-- Table to display workout data -->
+    <table id="workoutTable">
+        <thead>
+            <tr>
+                <th>Exercise</th>
+                <th>Sets</th>
+                <th>Reps</th>
+                <th>Weight</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data rows will be added here -->
+        </tbody>
+    </table>
+
+    <!-- Save button -->
+    <button id="saveToDropbox" class="save-btn">Save to Dropbox</button>
+    
+    <p id="errorMessage" class="error"></p>
+</div>
+
+<script src="https://unpkg.com/dropbox/dist/Dropbox-sdk.min.js"></script>
+<script>
+    // Replace 'YOUR_DROPBOX_ACCESS_TOKEN' with your Dropbox OAuth token
+    const ACCESS_TOKEN = 'sl.u.AFp25etBoyAnpfLTgEpxxtSRl5zxCZrfDtrlkWUCXPvccgOy47zhiCoxI5IToYPj61qT-acju9_Z4UwLh-TRrf6H1Th4dmW9t9TA4eqCWYzic6pX0OSy1qmqTYF_gdGQVe8D5ckiyGEgGF66sTSUKrq9d9GvaZ8CV1wEJR1T2UaSHDIeTw6JvBczH0i3AEVIK_a445gu6NkEtjEN-_3445pQw84lkWmIC6sCfPbt9_1ZI1vMEo167TswPm-Zw9dgbQW2deVsPqwK9rO8Ppc5u4oKmjGnz5OFkpaSR6m3Y1pbs1ZJrZyJCyJIHa_YiDjGdk-Gdo5sRgNCQxzP8YzfIZ4N9YdqBR8nu9a7YRVlvOUXCJek7aXABDDzOShsb9uauZ54Y57W5paaPr78ytbySdX_qP_zxtGR1LZzLJI6WXaCIYGz4MaL8ZEI33UOi6W-i7WAMnkf93s8dilMp6eB8Il9Xj7-Gxkuu5BjKOGSkuKglaUxc0gfgzPQGAT1uiuaPjG74_f1tCSWozXq6qlRpcJWMXVUoX9xuwDp-v623mK0r_wKeFI_LId0nhijUaVXAt8uyZ8bByc4V2BsnIZ-JZc-QCnNCzW5WMbwdM7m03ZzA1gR4AnZoaKxguegIlB78-a5KeP89eHV5f1i8nl5Y0nfFzUApeKmMqPjXw8Cnx2imvR0hE86ntAAgVrvJNdKtYxCKrWoxD2OLGcedh0FT64bo1ZPmq9RUBmn05C3loyRACEAsi4rsRxrydTiz1ph0gaiwaFS3dam-LI-eifIct-0tQvfOgzMtlNuJA3w3EjmM1_kX_ixvXPrPIBblUQw4UAR5jm50LATFMXNi4CuBU2dlFKXiYWiYDRe0z9j4m2-2gK9KXVe5Ss_DsRfpHZh2KM5zRjgwTJRhQhiFi3rFCgdbO6mC5yAz1Lg4-cIAXaCUl-9KHvq5YEkR3W_eIDGVhlIXBr8tDmAzpHRbHDRQ7DcZ-3KBm4AlmVGdEB0x9Alh-06HMf18n-YCSdAd7O7xfLS1DgQcUdGXVlmAgSnFF496SOR4BcnrTM9qSXITgacxDV6etYXScpS2qMeB9XPn4YiufEb6wpmGdbZM40sOA_uPVCo4iYJle0okwvfmbalEObLg69LBkCcKlGRtdOCXsb5xA-r_1AIEf49-68nTyMZ9e751p_7UA_ukycP0gzUcFxP2yfIw-n0ssFpDTrzbAJ3Z7ITKgZymPxfFQfBRIWrfCEDQr4nDpMy3BrBLtCjRmzFsDpIVEtckjcTm8jMq953IPI7ipfQ4GidsbW2d7x0'; // <-- Place your token here!
+
+    const workoutData = [];
+    const workoutTable = document.getElementById('workoutTable').getElementsByTagName('tbody')[0];
+    const errorMessage = document.getElementById('errorMessage');
+    
+    // Function to update the table with current workout data
+    function updateTable() {
+        workoutTable.innerHTML = '';
+        workoutData.forEach((workout, index) => {
+            const row = workoutTable.insertRow();
+            row.insertCell(0).textContent = workout.exercise;
+            row.insertCell(1).textContent = workout.sets;
+            row.insertCell(2).textContent = workout.reps;
+            row.insertCell(3).textContent = workout.weight;
+            row.insertCell(4).textContent = workout.date;
+        });
     }
 
-    function saveData() {
-      const rows = document.querySelectorAll("#workoutTable tbody tr");
-      let content = "Date\tExercise\tReps\tWeight\n";
-      rows.forEach(row => {
-        const inputs = row.querySelectorAll("input");
-        const values = Array.from(inputs).map(input => input.value);
-        content += values.join("\t") + "\n";
-      });
+    // Add workout to the data array
+    document.getElementById('addWorkout').addEventListener('click', () => {
+        const exercise = document.getElementById('exercise').value;
+        const sets = document.getElementById('sets').value;
+        const reps = document.getElementById('reps').value;
+        const weight = document.getElementById('weight').value;
+        const date = document.getElementById('date').value;
 
-      const filename = `workout_${new Date().toISOString().slice(0, 10)}.txt`;
+        // Simple validation to ensure all fields are filled
+        if (exercise && sets && reps && weight && date) {
+            workoutData.push({ exercise, sets, reps, weight, date });
+            updateTable();
+            errorMessage.textContent = '';
+        } else {
+            errorMessage.textContent = 'Please fill in all fields.';
+        }
+    });
 
-      const dbx = new Dropbox.Dropbox({ accessToken: DROPBOX_ACCESS_TOKEN });
-      dbx.filesUpload({
-        path: '/' + filename,
-        contents: content,
-        mode: 'overwrite'
-      })
-      .then(function(response) {
-        alert("Saved successfully!");
-        // Clear table after saving
-        const tbody = document.querySelector("#workoutTable tbody");
-        tbody.innerHTML = "";
-        addRow();
-      })
-      .catch(function(error) {
-        console.error("Upload failed", error);
-        alert("There was an error saving your data. Check the console.");
-      });
-    }
+    // Function to save data to Dropbox
+    document.getElementById('saveToDropbox').addEventListener('click', () => {
+        if (!ACCESS_TOKEN) {
+            errorMessage.textContent = 'Dropbox access token is missing!';
+            return;
+        }
 
-    // Initialize with one row
-    addRow();
-  </script>
+        const fileContent = workoutData.map(workout =>
+            `${workout.exercise}, ${workout.sets} sets, ${workout.reps} reps, ${workout.weight}kg, ${workout.date}`
+        ).join("\n");
+
+        const blob = new Blob([fileContent], { type: 'text/plain' });
+
+        const dbx = new Dropbox.Dropbox({ accessToken: ACCESS_TOKEN });
+
+        dbx.filesUpload({ path: '/workout_data.txt', contents: blob })
+            .then(() => {
+                alert('Data saved to Dropbox!');
+            })
+            .catch(error => {
+                console.error(error);
+                errorMessage.textContent = 'There was an error saving your data.';
+            });
+    });
+</script>
+
 </body>
 </html>
