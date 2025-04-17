@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+fetch('maintenance.flag', { method: 'HEAD' })
+  .then(response => {
+    if (response.ok) {
+      window.location.href = 'maintenance.html';
+    }
+  })
+  .catch(() => {
+    // If the file is missing or an error occurs, just continue to the main site
+  });
+</script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Workout Tracker</title>
@@ -420,10 +432,6 @@
     };
     
 </script>
-    
-<script src="maintenance.js"></script>
-    
-</body> lets make a fun joke where I am a pretty cool dude
-    
+        
 </body>
 </html>
