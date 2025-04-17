@@ -1,193 +1,424 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Workout Tracker</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-      body {
-          font-family: Arial, sans-serif;
-          margin: 0;
-          padding: 0;
-          background-color: #f7f7f7;
-      }
-      header {
-          background-color: #29ABE2;
-          color: white;
-          padding: 15px 0;
-          text-align: center;
-      }
-      .container {
-          padding: 20px;
-          max-width: 500px;
-          margin: 0 auto;
-      }
-      table {
-          width: 100%;
-          margin: 20px 0;
-          border-collapse: collapse;
-      }
-      th, td {
-          padding: 8px;
-          text-align: left;
-          border: 1px solid #ddd;
-      }
-      th {
-          background-color: #f2f2f2;
-      }
-      input[type="text"], input[type="number"], input[type="date"] {
-          width: 100%;
-          padding: 10px;
-          margin-bottom: 10px;
-          border: 1px solid #ddd;
-          border-radius: 5px;
-      }
-      .save-btn {
-          background-color: #29ABE2;
-          color: white;
-          padding: 10px 20px;
-          border: none;
-          border-radius: 5px;
-          cursor: pointer;
-          font-size: 16px;
-          width: 100%;
-      }
-      .save-btn:hover {
-          background-color: #1e8dbd;
-      }
-      .error {
-          color: red;
-          margin-top: 10px;
-      }
-      .header-with-timer {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0 20px;
-      }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Tracker</title>
+    <style>
+        /* Basic styling for the page */
+        body {
+            font-family: 'Inter', Arial, sans-serif; /* Using Inter font */
+            margin: 0;
+            padding: 0;
+            background-color: #f7f7f7;
+            color: #333; /* Default text color */
+        }
+        header {
+            background-color: #29ABE2; /* Header background color */
+            color: white; /* Header text color */
+            padding: 15px 0;
+            text-align: center;
+            border-bottom-left-radius: 15px; /* Rounded bottom corners */
+            border-bottom-right-radius: 15px;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2em; /* Larger heading */
+        }
+        header p {
+            margin: 5px 0 0 0;
+        }
 
-      #timer {
-        font-size: 24px;
-        font-weight: bold;
-      }
-  </style>
+        .container {
+            padding: 20px;
+            max-width: 600px; /* Slightly wider container */
+            margin: 20px auto; /* Centered container with margin */
+            background-color: #ffffff; /* White background for container */
+            border-radius: 10px; /* Rounded corners for container */
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Subtle shadow */
+        }
+
+        /* Style for the timer display */
+        .timer-container {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2em; /* Larger timer font */
+            font-weight: bold;
+            color: #1e8dbd; /* Timer color */
+        }
+
+        h2 {
+            text-align: center;
+            color: #29ABE2;
+            margin-bottom: 20px;
+        }
+
+        /* Styling for input fields */
+        input[type="text"],
+        input[type="number"],
+        input[type="date"] {
+            width: calc(100% - 22px); /* Full width minus padding */
+            padding: 10px;
+            margin-bottom: 15px; /* Increased spacing */
+            border: 1px solid #ddd;
+            border-radius: 5px; /* Rounded corners for inputs */
+            box-sizing: border-box; /* Include padding in width */
+            font-size: 1em;
+        }
+
+        /* Styling for buttons */
+        .action-btn {
+            background-color: #29ABE2; /* Button background */
+            color: white; /* Button text color */
+            padding: 12px 20px; /* Slightly larger padding */
+            border: none;
+            border-radius: 5px; /* Rounded corners */
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%; /* Full width */
+            margin-top: 10px; /* Space above buttons */
+            transition: background-color 0.3s ease; /* Smooth hover effect */
+        }
+        .action-btn:hover {
+            background-color: #1e8dbd; /* Darker shade on hover */
+        }
+        .action-btn:active {
+            background-color: #177aab; /* Even darker shade when clicked */
+        }
+
+        /* Styling for the workout table */
+        table {
+            width: 100%;
+            margin: 25px 0; /* Increased margin */
+            border-collapse: collapse;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05); /* Subtle shadow for table */
+        }
+        th, td {
+            padding: 12px; /* Increased padding */
+            text-align: left;
+            border: 1px solid #eee; /* Lighter border */
+        }
+        th {
+            background-color: #f2f2f2; /* Header background */
+            font-weight: bold; /* Bold header text */
+            color: #555;
+        }
+        /* Zebra striping for table rows */
+        tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+        /* Style for the "New Set" separator row */
+        .separator-row td {
+            text-align: center;
+            font-style: italic;
+            color: #888;
+            background-color: #e9e9e9 !important; /* Distinct background */
+            padding: 5px;
+        }
+
+        /* Styling for error messages */
+        .error {
+            color: #e74c3c; /* Red error color */
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Ensure Inter font is loaded */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
+    </style>
 </head>
 <body>
 
 <header>
-  <h1>Workout Tracker</h1>
-  <p>Track your workouts and save them to Dropbox</p>
+    <h1>Workout Tracker</h1>
+    <p>Track your workouts and save them to Dropbox</p>
 </header>
 
-<div class="header-with-timer">
-  <div id="timer">60:00</div>
-</div>
-
 <div class="container">
-  <h2>Enter Workout Details</h2>
+    <div class="timer-container">
+        <div id="timer">60:00</div>
+    </div>
 
-  <!-- Form to input workout data -->
-  <input type="text" id="exercise" placeholder="Exercise (e.g., Squats)" required>
-  <input type="number" id="sets" placeholder="Sets" required>
-  <input type="number" id="reps" placeholder="Reps per Set" required>
-  <input type="number" id="weight" placeholder="Weight (lbs)" required>
-  <input type="date" id="date" required>
+    <h2>Enter Workout Details</h2>
 
-  <button id="addWorkout" class="save-btn">Add Workout</button>
+    <input type="text" id="exercise" placeholder="Exercise (e.g., Squats)" required>
+    <input type="number" id="sets" placeholder="Sets" required>
+    <input type="number" id="reps" placeholder="Reps per Set" required>
+    <input type="number" id="weight" placeholder="Weight (lbs)" required>
+    <input type="date" id="date" required>
 
-  <!-- Start New Set Button -->
-  <button id="startNewSet" class="save-btn" style="margin-top: 10px;">Start New Set</button>
+    <button id="addWorkout" class="action-btn">Add Workout</button>
 
-  <!-- Table to display workout data -->
-  <table id="workoutTable">
-      <thead>
-          <tr>
-              <th>Exercise</th>
-              <th>Sets</th>
-              <th>Reps</th>
-              <th>Weight</th>
-              <th>Date</th>
-          </tr>
-      </thead>
-      <tbody>
-          <!-- Data rows will be added here -->
-      </tbody>
-  </table>
+    <button id="startNewSet" class="action-btn">Start New Set</button>
 
-  <!-- Save button -->
-  <button id="saveToDropbox" class="save-btn">Save to Dropbox</button>
-  
-  <p id="errorMessage" class="error"></p>
+    <h2>Workout Log</h2>
+    <table id="workoutTable">
+        <thead>
+            <tr>
+                <th>Exercise</th>
+                <th>Sets</th>
+                <th>Reps</th>
+                <th>Weight (lbs)</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            </tbody>
+    </table>
+
+    <button id="saveToDropbox" class="action-btn">Save Log to Dropbox (TXT)</button>
+
+    <p id="errorMessage" class="error"></p>
 </div>
 
 <script src="https://unpkg.com/dropbox/dist/Dropbox-sdk.min.js"></script>
+
 <script>
-  const ACCESS_TOKEN = 'sl.u.AFqXWaLvAYFpx8_d9FW5XGaIDFDls33j7vX7M2ide-orc-ysMlDpUoibfHON2x-7hO2GM2bn28H0j8212qRzEVYoNpJztQfEun21s1rmaCRiX71OAP8qSoosnwYxskNlzqNI8TJmIO5DZtVmiFXjhseV6DL0tc1Syixe-tFXGxFqpiqy8vJNuRAuv8TuIEJNdhO2Ru_S0GPY99Bz_UzqrLipmagbjWFONYG2l3Po3kHKaIpTxNrzhK3wBJzDKW573pZNaVc7qdn6EezOn2q0s8bRJjBwkgw0sASSXecVM12HuaY-tqp1pZtPcVZwJFAZquBkyQWsqjjnfRUwLkwXANtLWOpMvlkYAQU7HnFTM5LKCGV_kdj2n8Iki3zKheHYRgh_47yizIZbrQadpD2lEAEhqtotQEpDIK0iX1tMBx6wGqYMDuGbtMbMN8qX7hrsD_qZOjIgPv70HffhlVME4jOJMywNRfMRu7rBFVhlAPCubn8qdWvxTBnA8-u1xHzIH60QeC4UKczMEh182ZNboeRqSNFyPOZQZoJMX9CSemlx3XtqhVIAvm2I1XlnnfFkFG2t2sCWUwIHBYsX8QZ1aD8jz5NWAxJI8PG9PmG2a-HgXA9fkt2UmfiL3GEYZni1caESHGp3DaQH3aQgWaZ-9hmBqJTUrRHos1r3YyioU7XPZnsoQBRbr1_rrUBc_aSfUgjx2E8Eduiihwiw4vrni4W2-LFIwfp6cYoJcQRJpVLUNhmZDVcSe_aIZVdUCgFqNPZpCoAM7CkxrT8YdlpVcFNlnDbmTMJgR9eXk2EjXwHL4IAwSpcZegLd9O1b7rWm5yRqicbvMajHkn84XfWjh7dcNlNo6KMNsyRxWxmj6PJLYzRTx4iE3lZlua5iBVg3RtjLI00gkppwp7o2laGmRoDjmWuhgKN-tXlG2_9GuBUdoYhp4-V9nNiKzi-GH1bJ0GVE1oj_aSZne3OFp9qD2_EuigZO2YU409TKqi5VKviX6HU5x3S4BKCPW7cg6PjEwaHsYDC4TNmoer-EQ7He7eViqH8XPBaI1kyunMdgnDsWRtaVF9EZpe9KBcaFxDRNvLkvtXdcXySXts07CO5q2LDHZBohzGNfVQPJruGXhRjrdl5X47eYYNsGfKrS_jXpAi_HdK0Ai06kv212eFxm2iD83pI3mwnB4b-5M7BTBsZvpbYt7ss1P9zxoYkJ-GLk0sN6Zo3pJX3yOMSBjW33hmEEpOj8Y90_gI8I8w1PBilNa80eixGUQL9giPWNc4cXi4X6y6b2-Lw2vU1frq3jXtOO';
+    // !!! SECURITY WARNING !!!
+    // Hardcoding access tokens directly in client-side JavaScript is highly insecure.
+    // Anyone can view the source code and steal your token, gaining access to your Dropbox.
+    // In a real application, handle authentication and API calls via a secure backend server.
+    // This token is likely expired or invalid and is for demonstration purposes ONLY.
+    const ACCESS_TOKEN = 'sl.u.AFqXWaLvAYFpx8_d9FW5XGaIDFDls33j7vX7M2ide-orc-ysMlDpUoibfHON2x-7hO2GM2bn28H0j8212qRzEVYoNpJztQfEun21s1rmaCRiX71OAP8qSoosnwYxskNlzqNI8TJmIO5DZtVmiFXjhseV6DL0tc1Syixe-tFXGxFqpiqy8vJNuRAuv8TuIEJNdhO2Ru_S0GPY99Bz_UzqrLipmagbjWFONYG2l3Po3kHKaIpTxNrzhK3wBJzDKW573pZNaVc7qdn6EezOn2q0s8bRJjBwkgw0sASSXecVM12HuaY-tqp1pZtPcVZwJFAZquBkyQWsqjjnfRUwLkwXANtLWOpMvlkYAQU7HnFTM5LKCGV_kdj2n8Iki3zKheHYRgh_47yizIZbrQadpD2lEAEhqtotQEpDIK0iX1tMBx6wGqYMDuGbtMbMN8qX7hrsD_qZOjIgPv70HffhlVME4jOJMywNRfMRu7rBFVhlAPCubn8qdWvxTBnA8-u1xHzIH60QeC4UKczMEh182ZNboeRqSNFyPOZQZoJMX9CSemlx3XtqhVIAvm2I1XlnnfFkFG2t2sCWUwIHBYsX8QZ1aD8jz5NWAxJI8PG9PmG2a-HgXA9fkt2UmfiL3GEYZni1caESHGp3DaQH3aQgWaZ-9hmBqJTUrRHos1r3YyioU7XPZnsoQBRbr1_rrUBc_aSfUgjx2E8Eduiihwiw4vrni4W2-LFIwfp6cYoJcQRJpVLUNhmZDVcSe_aIZVdUCgFqNPZpCoAM7CkxrT8YdlpVcFNlnDbmTMJgR9eXk2EjXwHL4IAwSpcZegLd9O1b7rWm5yRqicbvMajHkn84XfWjh7dcNlNo6KMNsyRxWxmj6PJLYzRTx4iE3lZlua5iBVg3RtjLI00gkppwp7o2laGmRoDjmWuhgKN-tXlG2_9GuBUdoYhp4-V9nNiKzi-GH1bJ0GVE1oj_aSZne3OFp9qD2_EuigZO2YU409TKqi5VKviX6HU5x3S4BKCPW7cg6PjEwaHsYDC4TNmoer-EQ7He7eViqH8XPBaI1kyunMdgnDsWRtaVF9EZpe9KBcaFxDRNvLkvtXdcXySXts07CO5q2LDHZBohzGNfVQPJruGXhRjrdl5X47eYYNsGfKrS_jXpAi_HdK0Ai06kv212eFxm2iD83pI3mwnB4b-5M7BTBsZvpbYt7ss1P9zxoYkJ-GLk0sN6Zo3pJX3yOMSBjW33hmEEpOj8Y90_gI8I8w1PBilNa80eixGUQL9giPWNc4cXi4X6y6b2-Lw2vU1frq3jXtOO'; // Replace with your actual token ONLY for testing
 
-  const workoutData = [];
-  const workoutTable = document.getElementById('workoutTable').getElementsByTagName('tbody')[0];
-  const errorMessage = document.getElementById('errorMessage');
+    // --- Global Variables ---
+    const workoutData = []; // Array to store workout objects
+    const workoutTableBody = document.getElementById('workoutTable').getElementsByTagName('tbody')[0];
+    const errorMessage = document.getElementById('errorMessage');
+    const timerDisplay = document.getElementById('timer');
+    let timerInterval = null; // To hold the interval ID for the timer
+    let totalSeconds = 60 * 60; // Initial timer duration: 60 minutes
 
-  function updateTable() {
-      workoutTable.innerHTML = '';
-      workoutData.forEach((workout) => {
-          const row = workoutTable.insertRow();
-          row.insertCell(0).textContent = workout.exercise;
-          row.insertCell(1).textContent = workout.sets;
-          row.insertCell(2).textContent = workout.reps;
-          row.insertCell(3).textContent = workout.weight;
-          row.insertCell(4).textContent = workout.date;
-      });
-  }
+    // --- DOM Element References ---
+    const exerciseInput = document.getElementById('exercise');
+    const setsInput = document.getElementById('sets');
+    const repsInput = document.getElementById('reps');
+    const weightInput = document.getElementById('weight');
+    const dateInput = document.getElementById('date');
 
-  document.getElementById('addWorkout').addEventListener('click', () => {
-      const exercise = document.getElementById('exercise').value;
-      const sets = document.getElementById('sets').value;
-      const reps = document.getElementById('reps').value;
-      const weight = document.getElementById('weight').value;
-      const date = document.getElementById('date').value;
+    // --- Functions ---
 
-      if (exercise && sets && reps && weight && date) {
-          workoutData.push({ exercise, sets, reps, weight, date });
-          updateTable();
-          errorMessage.textContent = '';
-          
-          // Play ding sound
-          const audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
-          audio.play();
+    /**
+     * Updates the workout table display based on the workoutData array.
+     */
+    function updateTable() {
+        // Clear existing rows except separator rows
+        const rows = workoutTableBody.querySelectorAll('tr:not(.separator-row)');
+        rows.forEach(row => row.remove());
 
-          // Trigger vibration
-          if (navigator.vibrate) {
-              navigator.vibrate(200); // Vibrate for 200ms
-          }
-      } else {
-          errorMessage.textContent = 'Please fill in all fields.';
-      }
-  });
+        // Add data rows back
+        let currentInsertionPoint = workoutTableBody.firstChild; // Start from the top
+        workoutData.forEach((workout) => {
+            const row = workoutTableBody.insertRow(); // Insert at the end temporarily
+            row.insertCell(0).textContent = workout.exercise;
+            row.insertCell(1).textContent = workout.sets;
+            row.insertCell(2).textContent = workout.reps;
+            row.insertCell(3).textContent = workout.weight;
+            row.insertCell(4).textContent = workout.date;
 
-  // Event listener for Start New Set button
-  document.getElementById('startNewSet').addEventListener('click', () => {
-      // Logic for starting a new set (resetting form or something else)
-      document.getElementById('exercise').value = '';
-      document.getElementById('sets').value = '';
-      document.getElementById('reps').value = '';
-      document.getElementById('weight').value = '';
-      document.getElementById('date').value = '';
-  });
+            // Move the row to the correct position before the next separator
+            let nextSeparator = findNextSeparator(currentInsertionPoint);
+            workoutTableBody.insertBefore(row, nextSeparator); // Insert before the next separator or at the end
+            currentInsertionPoint = row.nextSibling; // Update insertion point
+        });
+    }
 
-  document.getElementById('saveToDropbox').addEventListener('click', () => {
-      if (workoutData.length > 0) {
-          const dbx = new Dropbox.Dropbox({ accessToken: ACCESS_TOKEN });
-          const fileContent = JSON.stringify(workoutData);
-          const fileName = 'workout_data.json';
-          dbx.filesUpload({ path: '/' + fileName, contents: fileContent })
-              .then(() => alert('Workout data saved to Dropbox!'))
-              .catch((err) => console.error(err));
-      } else {
-          alert('No workout data to save!');
-      }
-  });
+    /**
+     * Finds the next separator row starting from a given node.
+     * @param {Node} startNode - The node to start searching from.
+     * @returns {Node|null} - The next separator row node, or null if none found.
+     */
+    function findNextSeparator(startNode) {
+        let currentNode = startNode;
+        while (currentNode) {
+            if (currentNode.nodeType === 1 && currentNode.classList.contains('separator-row')) {
+                return currentNode;
+            }
+            currentNode = currentNode.nextSibling;
+        }
+        return null; // No separator found after startNode
+    }
+
+
+    /**
+     * Clears all the input fields in the form.
+     */
+    function clearInputFields() {
+        exerciseInput.value = '';
+        setsInput.value = '';
+        repsInput.value = '';
+        weightInput.value = '';
+        dateInput.value = ''; // Also clear the date
+    }
+
+    /**
+     * Formats seconds into MM:SS format.
+     * @param {number} seconds - Total seconds.
+     * @returns {string} - Formatted time string.
+     */
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+
+    /**
+     * Updates the timer display every second.
+     */
+    function updateTimer() {
+        if (totalSeconds <= 0) {
+            clearInterval(timerInterval); // Stop the timer
+            timerDisplay.textContent = "00:00";
+            // Optional: Add an alert or visual indication that time is up
+            // alert("Time's up!");
+            return;
+        }
+        totalSeconds--; // Decrement seconds
+        timerDisplay.textContent = formatTime(totalSeconds); // Update display
+    }
+
+    /**
+     * Starts the countdown timer.
+     */
+    function startTimer() {
+        if (timerInterval) {
+            clearInterval(timerInterval); // Clear any existing interval
+        }
+        timerDisplay.textContent = formatTime(totalSeconds); // Initial display
+        timerInterval = setInterval(updateTimer, 1000); // Start interval
+    }
+
+    // --- Event Listeners ---
+
+    /**
+     * Handles the "Add Workout" button click.
+     * Adds the workout to the data array, updates the table, plays sound, vibrates, and clears fields.
+     */
+    document.getElementById('addWorkout').addEventListener('click', () => {
+        const exercise = exerciseInput.value.trim();
+        const sets = setsInput.value.trim();
+        const reps = repsInput.value.trim();
+        const weight = weightInput.value.trim();
+        const date = dateInput.value; // Date input type usually doesn't need trim
+
+        if (exercise && sets && reps && weight && date) {
+            workoutData.push({ exercise, sets, reps, weight, date });
+            updateTable(); // Update the table display
+            errorMessage.textContent = ''; // Clear any previous error message
+            clearInputFields(); // Clear fields after adding
+
+            // Play ding sound (using the new URL)
+            try {
+                // Use the specified GitHub raw file URL
+                const audio = new Audio('https://github.com/joshstafki/workout_data/raw/refs/heads/main/ding-sound-246413.mp3');
+                audio.play().catch(e => console.error("Audio play failed:", e)); // Handle potential play errors
+            } catch (e) {
+                console.error("Error creating Audio object:", e);
+            }
+
+
+            // Trigger vibration
+            if (navigator.vibrate) {
+                try {
+                    navigator.vibrate(200); // Vibrate for 200ms
+                } catch (e) {
+                    console.error("Vibration failed:", e);
+                }
+            }
+        } else {
+            errorMessage.textContent = 'Please fill in all fields.'; // Show error if fields are missing
+        }
+    });
+
+    /**
+     * Handles the "Start New Set" button click.
+     * Adds a separator row to the table and clears input fields.
+     */
+    document.getElementById('startNewSet').addEventListener('click', () => {
+        // Add a separator row to the table
+        const separatorRow = workoutTableBody.insertRow(); // Add row at the end
+        separatorRow.classList.add('separator-row'); // Add class for styling
+        const cell = separatorRow.insertCell(0);
+        cell.colSpan = 5; // Make the cell span all columns
+        cell.textContent = '--- New Set ---';
+
+        // Clear the input fields
+        clearInputFields();
+        errorMessage.textContent = ''; // Clear error message
+    });
+
+    /**
+     * Handles the "Save to Dropbox" button click.
+     * Converts workout data to TXT format and uploads it.
+     */
+    document.getElementById('saveToDropbox').addEventListener('click', () => {
+        if (workoutData.length > 0) {
+            errorMessage.textContent = 'Saving...'; // Provide feedback
+
+            // --- Convert data to TXT format ---
+            let fileContent = "Workout Log\n";
+            fileContent += "====================\n\n";
+            workoutData.forEach(workout => {
+                fileContent += `Exercise: ${workout.exercise}, Sets: ${workout.sets}, Reps: ${workout.reps}, Weight: ${workout.weight} lbs, Date: ${workout.date}\n`;
+            });
+            fileContent += "\nGenerated by Workout Tracker";
+            // --- End TXT format conversion ---
+
+            const fileName = 'workout_data.txt'; // Save as TXT file
+
+            try {
+                const dbx = new Dropbox.Dropbox({ accessToken: ACCESS_TOKEN });
+
+                dbx.filesUpload({
+                    path: '/' + fileName,
+                    contents: fileContent,
+                    mode: 'overwrite' // Overwrite if file exists, or use 'add'
+                 })
+                    .then((response) => {
+                        console.log(response);
+                        errorMessage.textContent = ''; // Clear saving message
+                        // Use a custom message box instead of alert
+                        alert('Workout data saved to Dropbox as workout_data.txt!');
+                    })
+                    .catch((error) => {
+                        console.error('Dropbox Error:', error);
+                        let userMessage = 'Failed to save to Dropbox. ';
+                        // Try to parse Dropbox error for more specific feedback
+                        if (error.error && error.error['.tag'] === 'invalid_access_token') {
+                           userMessage += 'The access token is invalid or expired.';
+                        } else if (error.status === 0) {
+                            userMessage += 'Network error or CORS issue. Check console.';
+                        } else {
+                            userMessage += 'Check console for details.';
+                        }
+                        errorMessage.textContent = userMessage;
+                        // Use a custom message box instead of alert
+                        alert(userMessage);
+                    });
+            } catch (e) {
+                 console.error("Dropbox SDK instantiation error:", e);
+                 errorMessage.textContent = 'Error initializing Dropbox SDK.';
+                 alert('Error initializing Dropbox SDK.');
+            }
+
+        } else {
+            errorMessage.textContent = 'No workout data to save!';
+            alert('No workout data to save!'); // Inform user
+        }
+    });
+
+    // --- Initial Setup ---
+
+    // Set the date input to today's date by default
+    dateInput.valueAsDate = new Date();
+
+    // Start the timer when the page is fully loaded
+    window.onload = () => {
+        startTimer();
+    };
+
 </script>
 
 </body>
