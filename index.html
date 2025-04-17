@@ -1,27 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<div class="header-with-timer">
-  <div id="timer">60:00</div>
-</div>
-<style>
-  .header-with-timer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 20px; /* optional spacing */
-  }
-
-  #timer {
-    font-size: 24px;
-    font-weight: bold;
-  }
-</style>
-
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-title" content="MyAppName">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Workout Tracker</title>
@@ -81,6 +60,17 @@
           color: red;
           margin-top: 10px;
       }
+      .header-with-timer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+      }
+
+      #timer {
+        font-size: 24px;
+        font-weight: bold;
+      }
   </style>
 </head>
 <body>
@@ -89,6 +79,10 @@
   <h1>Workout Tracker</h1>
   <p>Track your workouts and save them to Dropbox</p>
 </header>
+
+<div class="header-with-timer">
+  <div id="timer">60:00</div>
+</div>
 
 <div class="container">
   <h2>Enter Workout Details</h2>
@@ -158,6 +152,15 @@
           workoutData.push({ exercise, sets, reps, weight, date });
           updateTable();
           errorMessage.textContent = '';
+          
+          // Play ding sound
+          const audio = new Audio('https://www.soundjay.com/button/beep-07.wav');
+          audio.play();
+
+          // Trigger vibration
+          if (navigator.vibrate) {
+              navigator.vibrate(200); // Vibrate for 200ms
+          }
       } else {
           errorMessage.textContent = 'Please fill in all fields.';
       }
@@ -165,114 +168,27 @@
 
   // Event listener for Start New Set button
   document.getElementById('startNewSet').addEventListener('click', () => {
-      // Add a new "set" row.
-      // You can customize the fields - here we're showing "New Set" in the exercise column.
-      workoutData.push({
-          exercise: "New Set",
-          sets: "",
-          reps: "",
-          weight: "",
-          date: ""
-      });
-      updateTable();
+      // Logic for starting a new set (resetting form or something else)
+      document.getElementById('exercise').value = '';
+      document.getElementById('sets').value = '';
+      document.getElementById('reps').value = '';
+      document.getElementById('weight').value = '';
+      document.getElementById('date').value = '';
   });
 
   document.getElementById('saveToDropbox').addEventListener('click', () => {
-      if (!ACCESS_TOKEN) {
-          errorMessage.textContent = 'Dropbox access token is missing!';
-          return;
+      if (workoutData.length > 0) {
+          const dbx = new Dropbox.Dropbox({ accessToken: ACCESS_TOKEN });
+          const fileContent = JSON.stringify(workoutData);
+          const fileName = 'workout_data.json';
+          dbx.filesUpload({ path: '/' + fileName, contents: fileContent })
+              .then(() => alert('Workout data saved to Dropbox!'))
+              .catch((err) => console.error(err));
+      } else {
+          alert('No workout data to save!');
       }
-
-      const fileContent = workoutData.map(workout =>
-          `${workout.exercise}, ${workout.sets} sets, ${workout.reps} reps, ${workout.weight}lbs, ${workout.date}`
-      ).join("\n");
-
-      const blob = new Blob([fileContent], { type: 'text/plain' });
-      const reader = new FileReader();
-
-      reader.onload = function () {
-          const dropbox = new Dropbox.Dropbox({ accessToken: ACCESS_TOKEN });
-          const fileName = 'workout_data.txt';
-          dropbox.filesUpload({
-              path: `/${fileName}`,
-              contents: reader.result
-          })
-          .then(function (response) {
-              alert('Workout saved to Dropbox!');
-          })
-          .catch(function (error) {
-              errorMessage.textContent = 'Error saving to Dropbox: ' + error;
-          });
-      };
-
-      reader.readAsText(blob);
   });
 </script>
-<script>
-  let duration = 60 * 60; // 60 minutes
-
-  function startTimer(seconds) {
-    const display = document.getElementById('timer');
-
-    const countdown = setInterval(() => {
-      const minutes = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      display.textContent = `${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-      
-      if (seconds <= 0) {
-        clearInterval(countdown);
-      } else {
-        seconds--;
-      }
-    }, 1000);
-  }
-
-  window.onload = () => {
-    startTimer(duration);
-  };
-</script>
-<script>
-  // Replace with your Dropbox App key
-  const DROPBOX_APP_KEY = '<script>
-  // Replace with your Dropbox App key
-  const DROPBOX_APP_KEY = 'sl.u.AFqXWaLvAYFpx8_d9FW5XGaIDFDls33j7vX7M2ide-orc-ysMlDpUoibfHON2x-7hO2GM2bn28H0j8212qRzEVYoNpJztQfEun21s1rmaCRiX71OAP8qSoosnwYxskNlzqNI8TJmIO5DZtVmiFXjhseV6DL0tc1Syixe-tFXGxFqpiqy8vJNuRAuv8TuIEJNdhO2Ru_S0GPY99Bz_UzqrLipmagbjWFONYG2l3Po3kHKaIpTxNrzhK3wBJzDKW573pZNaVc7qdn6EezOn2q0s8bRJjBwkgw0sASSXecVM12HuaY-tqp1pZtPcVZwJFAZquBkyQWsqjjnfRUwLkwXANtLWOpMvlkYAQU7HnFTM5LKCGV_kdj2n8Iki3zKheHYRgh_47yizIZbrQadpD2lEAEhqtotQEpDIK0iX1tMBx6wGqYMDuGbtMbMN8qX7hrsD_qZOjIgPv70HffhlVME4jOJMywNRfMRu7rBFVhlAPCubn8qdWvxTBnA8-u1xHzIH60QeC4UKczMEh182ZNboeRqSNFyPOZQZoJMX9CSemlx3XtqhVIAvm2I1XlnnfFkFG2t2sCWUwIHBYsX8QZ1aD8jz5NWAxJI8PG9PmG2a-HgXA9fkt2UmfiL3GEYZni1caESHGp3DaQH3aQgWaZ-9hmBqJTUrRHos1r3YyioU7XPZnsoQBRbr1_rrUBc_aSfUgjx2E8Eduiihwiw4vrni4W2-LFIwfp6cYoJcQRJpVLUNhmZDVcSe_aIZVdUCgFqNPZpCoAM7CkxrT8YdlpVcFNlnDbmTMJgR9eXk2EjXwHL4IAwSpcZegLd9O1b7rWm5yRqicbvMajHkn84XfWjh7dcNlNo6KMNsyRxWxmj6PJLYzRTx4iE3lZlua5iBVg3RtjLI00gkppwp7o2laGmRoDjmWuhgKN-tXlG2_9GuBUdoYhp4-V9nNiKzi-GH1bJ0GVE1oj_aSZne3OFp9qD2_EuigZO2YU409TKqi5VKviX6HU5x3S4BKCPW7cg6PjEwaHsYDC4TNmoer-EQ7He7eViqH8XPBaI1kyunMdgnDsWRtaVF9EZpe9KBcaFxDRNvLkvtXdcXySXts07CO5q2LDHZBohzGNfVQPJruGXhRjrdl5X47eYYNsGfKrS_jXpAi_HdK0Ai06kv212eFxm2iD83pI3mwnB4b-5M7BTBsZvpbYt7ss1P9zxoYkJ-GLk0sN6Zo3pJX3yOMSBjW33hmEEpOj8Y90_gI8I8w1PBilNa80eixGUQL9giPWNc4cXi4X6y6b2-Lw2vU1frq3jXtOO';
-
-  // Store token timestamp and token itself
-  function setToken(token) {
-    localStorage.setItem('dropbox_token', token);
-    localStorage.setItem('dropbox_token_time', Date.now().toString());
-  }
-
-  function getToken() {
-    const savedTime = parseInt(localStorage.getItem('dropbox_token_time'));
-    const token = localStorage.getItem('dropbox_token');
-    if (!token || isNaN(savedTime) || (Date.now() - savedTime > 4 * 60 * 60 * 1000)) {
-      startDropboxAuth();
-    }
-    return token;
-  }
-
-  function startDropboxAuth() {
-    const dbx = new Dropbox.Dropbox({ clientId: DROPBOX_APP_KEY });
-    const authUrl = dbx.auth.getAuthenticationUrl(window.location.href, undefined, 'code', 'offline', undefined, undefined, true);
-    authUrl.then(url => {
-      window.location.href = url;
-    });
-  }
-
-  async function finishDropboxAuth() {
-    const params = new URLSearchParams(window.location.hash.slice(1));
-    const accessToken = params.get('access_token');
-
-    if (accessToken) {
-      setToken(accessToken);
-      window.location.hash = ''; // clean up
-    }
-  }
-
-  finishDropboxAuth();
-</script>
-
 
 </body>
 </html>
